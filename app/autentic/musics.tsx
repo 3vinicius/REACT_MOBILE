@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     SafeAreaView,
     View,
@@ -8,88 +8,143 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Button,
+    Button, ActivityIndicator, Alert,
 } from "react-native";
-import WebView from "react-native-webview";
+import {Service} from "@/scripts/service";
+import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 export default (props) => {
+
+    const imageUnlike = 'https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/ac2ce476-71da-4eb8-badb-ca9a21cfac96'
+    const imageLike = "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/98acf552-1cfb-4736-809b-a8d2c5ae5a8d"
+
+    const service = new Service();
     const [textInput1, onChangeTextInput1] = useState('');
     const [defaultImage, onChangeTextDefaultImage] = useState(0);
-
-
-    const initialImages = Array(5).fill('https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/ac2ce476-71da-4eb8-badb-ca9a21cfac96'); // Imagens iniciais (todas com a mesma)
+    const initialImages = []
     const [imageSources, setImageSources] = useState(initialImages);
+    const [objectSources, setObjectSources] = useState([]);
 
 
-    const handleImageClick = (index) => {
 
 
-        const newImageSources = [...imageSources];
+    const [musicas, setMusicas] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-        if (imageSources[index] == 'https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/98acf552-1cfb-4736-809b-a8d2c5ae5a8d' ){
-            newImageSources[index] = 'https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/ac2ce476-71da-4eb8-badb-ca9a21cfac96';
+    const email = "teste"
+
+
+
+    async function trazerDados() {
+        const resultado = await service.buscarMusicasCurtidas(email);
+        console.log(resultado)
+        let array = resultado.length;
+        const initialImageArray = Array(array).fill(imageUnlike); // Atualize `imageSources` com a lógica correta
+        const musicsComponet = resultado.map((element) => {
+            if (element.thumbnail === null) {
+                element.thumbnail = "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e03e495a-8596-4cab-a33a-703e023e41e5";
+            }
+            return { music: element, source: imageUnlike }; // Não modifique o valor de source aqui
+        });
+        setImageSources(initialImageArray);
+        setObjectSources(musicsComponet);
+    }
+
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (objectSources.length > 0) {
+                setLoading(false)
+            }
+        }, 1500)
+    }, [objectSources]);
+
+
+    useEffect(() => {
+        trazerDados();
+    }, []);
+
+
+    const handleImageClick = async (index) => {
+        if (objectSources[index].music.likedUser == 1 ){
+        await  service.unLikeMusic(objectSources[index].music.id,email)
         } else {
-            newImageSources[index] = 'https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/98acf552-1cfb-4736-809b-a8d2c5ae5a8d';
+            console.log("likee")
+            await  service.likeMusic(objectSources[index].music.id,email)
         }
-        setImageSources(newImageSources);
+     await trazerDados()
     };
 
 
-    return (
+    function musicsLikes(likedUser?: number){
+        return likedUser == null ? imageUnlike: imageLike
+    }
 
-        <SafeAreaView style={styles.container}>
-            <ScrollView  style={styles.scrollView}>
-                <View style={styles.row}>
-                    <View style={styles.column}>
-                        <Image
-                            source = {{uri: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e03e495a-8596-4cab-a33a-703e023e41e5"}}
-                            resizeMode = {"stretch"}
-                            style={styles.image}
-                        />
-                        <Image
-                            source = {{uri: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/44d63046-edde-43d7-8305-81a4eff65b16"}}
-                            resizeMode = {"stretch"}
-                            style={styles.image}
-                        />
-                        <Image
-                            source = {{uri: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/d23a960c-d99d-4c3e-9a47-dfa30856b961"}}
-                            resizeMode = {"stretch"}
-                            style={styles.image}
-                        />
-                        <Image
-                            source = {{uri: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/176f73e3-b62b-457b-bf71-ff04297babe8"}}
-                            resizeMode = {"stretch"}
-                            style={styles.image}
-                        />
-                        <Image
-                            source = {{uri: "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/23590a94-2b18-4d87-b753-72e472e6c7de"}}
-                            resizeMode = {"stretch"}
-                            style={styles.image2}
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    } else {
+        return (
+            <SafeAreaView style={styles.container}>
+                <ScrollView style={styles.scrollView}>
+                    {objectSources.length === 0 ? (
+                        <Text>Carregando músicas...</Text>
+                    ) : (
+                        objectSources.map((musicComponet, index) => (
+                            <View key={index} style={styles.styleFlex}>
+                                <View style={styles.itemContainer}>
+                                    <Image
+                                        source={{ uri: musicComponet.music.thumbnail }}
+                                        resizeMode={"stretch"}
+                                        style={styles.image}
+                                    />
+                                    <Text style={styles.fontSize}>{musicComponet.music.title}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => handleImageClick(index)}>
+                                    <Image
+                                        source={{ uri: musicsLikes(musicComponet.music.likedUser)}}
+                                        resizeMode={"stretch"}
+                                        style={styles.image3}
+                                    />
+                                    <Text style={styles.textTotalSize}>{musicComponet.music.totalLikes}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                    )}
+                    <View style={styles.viewStyle}>
+                        <TextInput
+                            placeholder={"Buscar"}
+                            value={textInput1}
+                            onChangeText={onChangeTextInput1}
+                            style={styles.input}
                         />
                     </View>
-                    <View style={styles.column2}>
-
-                        {imageSources.map((source ,index) => {
-                            return <TouchableOpacity key={index} onPress={() => handleImageClick(index)}>
-                                <Image  source = {{uri: source}}
-                                        resizeMode = {"stretch"}
-                                        style={styles.image3} />
-                            </TouchableOpacity>
-                        } )}
-                    </View>
-                </View>
-                <View style={styles.viewStyle}>
-                    <TextInput
-                        placeholder={"Buscar"}
-                        value={textInput1}
-                        onChangeText={onChangeTextInput1}
-                        style={styles.input}
-                    />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
-    )
+                </ScrollView>
+            </SafeAreaView>
+        );
+    }
 }
+
+
+
 const styles = StyleSheet.create({
+    textTotalSize: {
+        fontSize: 10,
+        textAlign: "end",
+        lineHeight: 10,
+        transform: "translateY(-5px)"
+    },
+    fontSize: {
+      fontSize: 10,
+    },
+    styleFlex: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-evenly"
+    },
     container: {
         flex: 1,
         backgroundColor: "#FFFFFF",
@@ -116,7 +171,7 @@ const styles = StyleSheet.create({
     image: {
         borderRadius: 10,
         height: 90,
-        marginBottom: 50,
+        width: 200
     },
     image2: {
         borderRadius: 10,
@@ -125,12 +180,10 @@ const styles = StyleSheet.create({
     image3: {
         width: 50,
         height: 25,
-        marginBottom: 115,
     },
     image4: {
         width: 50,
         height: 26,
-        marginBottom: 114,
     },
     image5: {
         width: 50,
@@ -207,4 +260,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingVertical: 28,
     },
+    itemContainer: {
+        display: "flex",
+        alignItems: "center",
+        paddingBottom: 20
+    }
 });

@@ -11,12 +11,20 @@ import {
     Button, Alert
 } from "react-native";
 
-import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
+import {Service} from "@/scripts/service"
+
+//import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default (props) => {
+
+
     const [textInput1, onChangeTextInput1] = useState('');
     const [videoId, onChangeVideoId] = useState('');
     const [display, onChangeDisplay] = useState('none')
+
+
+    const service = new Service();
 
 
     const [playing, setPlaying] = useState(false);
@@ -26,13 +34,29 @@ export default (props) => {
     }
 
 
-    const onStateChange = useCallback( (state) => {
+    async function registrarMusica(){
+
+
+        const meta  =  await getYoutubeMeta(videoId).then(meta => {
+            console.log('title of the video : ' + meta.title);
+            console.log('title of the video : ' + meta.thumbnail_url);
+            return meta
+        });
+
+        let email = await AsyncStorage.getItem("EMAIL")
+
+        const result = await service.registrarMusica(meta.title,textInput1,email,meta.thumbnail_url)
+        console.log(result)
+        console.log("hi")
+        if (result === "REGISTREFULL") {
+            Alert.alert("Video registrado")
+        }
+    }
+
+    const onStateChange = useCallback(  (state) => {
         console.log(state)
         if (state == "video cued") {
-            getYoutubeMeta(videoId).then(meta => {
-                Alert.alert('title of the video : ' + meta.title);
-                console.log('title of the video : ' + meta.thumbnail_url);
-            });
+            registrarMusica()
             onChangeDisplay("Block")
         }
 
@@ -53,12 +77,12 @@ export default (props) => {
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={{display:display}}>
-                    <YoutubePlayer
-                        height={styles.image.height}
-                        play={playing}
-                        videoId={videoId}
-                        onChangeState={onStateChange}
-                    />
+                    {/*<YoutubePlayer*/}
+                    {/*    height={styles.image.height}*/}
+                    {/*    play={playing}*/}
+                    {/*    videoId={videoId}*/}
+                    {/*    onChangeState={onStateChange}*/}
+                    {/*/>*/}
                 </View>
 
                 <TextInput
