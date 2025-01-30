@@ -23,6 +23,8 @@ export default (props) => {
     const [videoId, onChangeVideoId] = useState('');
     const [display, onChangeDisplay] = useState('none')
 
+    const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
 
     const service = new Service();
 
@@ -30,13 +32,15 @@ export default (props) => {
     const [playing, setPlaying] = useState(false);
 
     function carrgarInput(text: string){
-        onChangeVideoId(textInput1)
+        onChangeVideoId(textInput1.match(regex)[1])
+        registrarMusica()
     }
 
 
     async function registrarMusica(){
 
 
+        console.log(videoId)
         const meta  =  await getYoutubeMeta(videoId).then(meta => {
             console.log('title of the video : ' + meta.title);
             console.log('title of the video : ' + meta.thumbnail_url);

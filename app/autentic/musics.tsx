@@ -39,7 +39,6 @@ export default (props) => {
 
     async function trazerDados() {
         const resultado = await service.buscarMusicasCurtidas(email);
-        console.log(resultado)
         let array = resultado.length;
         const initialImageArray = Array(array).fill(imageUnlike); // Atualize `imageSources` com a lógica correta
         const musicsComponet = resultado.map((element) => {
@@ -71,7 +70,6 @@ export default (props) => {
         if (objectSources[index].music.likedUser == 1 ){
         await  service.unLikeMusic(objectSources[index].music.id,email)
         } else {
-            console.log("likee")
             await  service.likeMusic(objectSources[index].music.id,email)
         }
      await trazerDados()
