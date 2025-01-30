@@ -79,7 +79,7 @@ export default (props) => {
 
 
     function musicsLikes(likedUser?: number){
-        return likedUser == null ? imageUnlike: imageLike
+        return likedUser == 0 ? imageUnlike: imageLike
     }
 
 

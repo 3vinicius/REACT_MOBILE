@@ -16,20 +16,20 @@ export default function TabLayout() {
   const service = new Service();
   const [autenticate, setAutenticate] = useState(false);
 
-    async function autenticar(){
-        const email = await AsyncStorage.getItem("EMAIL")
-        const password = await AsyncStorage.getItem("PASSWORD")
-        if( email != null && password != null) {
-            if (await service.autenticarUsuario(email,password) === true){
-                router.push("/autentic/musics")
-            }
-        }
-    }
+    // async function autenticar(){
+    //     const email = await AsyncStorage.getItem("EMAIL")
+    //     const password = await AsyncStorage.getItem("PASSWORD")
+    //     if( email != null && password != null) {
+    //         if (await service.autenticarUsuario(email,password) === true){
+    //             router.push("/autentic/musics")
+    //         }
+    //     }
+    // }
 
 
-    useEffect( () => {
-        autenticar().then(r => r)
-    }, []);
+    // useEffect( () => {
+    //     autenticar().then(r => r)
+    // }, []);
 
   return (
     <Tabs
