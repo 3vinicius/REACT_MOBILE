@@ -1,5 +1,5 @@
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     SafeAreaView,
     View,
@@ -16,31 +16,46 @@ import {Link, router} from "expo-router";
 import {Service} from "@/scripts/service";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Utils} from "@/scripts/utils";
 export default (props) => {
 
     function goToNext(){
         router.push("/autentic/musics")
     }
 
-    const [email, onChangeEmail] = useState('');
-    const [password, onChangePassword] = useState('');
+    const [email, onChangeEmail] = useState(null);
+    const [password, onChangePassword] = useState(null);
 
     const service = new Service();
+    const utils = new Utils()
 
+    useEffect(() => {
 
+       utils.verifiUserAuthentic().then(auth => {
+           if (auth) {
+               utils.buscarEmail().then(result => {
+                       onChangeEmail(result)
+                   }
+               )
+               utils.buscarPassword().then(result => {
+                   onChangePassword(result)
+               })
+               goToNext()
+           }
+       })
+    }, []);
 
     async function autenticationUser(){
+
         const result = await service.autenticarUsuario(email,password)
-        console.log(result)
         if (result === true){
             try {
-                AsyncStorage.getAllKeys().then().then(r => console.log(r))
                 await AsyncStorage.setItem("EMAIL", email)
-                await AsyncStorage.setItem("password", password)
+                await AsyncStorage.setItem("PASSWORD", password)
+                goToNext();
             } catch (e) {
                 console.log(e)
             }
-            goToNext();
         } else {
             Alert.alert("Email ou senha incorreta")
         }

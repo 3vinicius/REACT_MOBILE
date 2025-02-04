@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     SafeAreaView,
     View,
@@ -13,80 +13,83 @@ import {
 
 import {Service} from "@/scripts/service"
 
-//import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
+import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+    convertAnimationObjectToKeyframes
+} from "react-native-reanimated/lib/typescript/layoutReanimation/web/animationParser";
+import {router} from "expo-router";
+import {Utils} from "@/scripts/utils";
 
 export default (props) => {
 
 
+
     const [textInput1, onChangeTextInput1] = useState('');
     const [videoId, onChangeVideoId] = useState('');
+    const [email, onChangeEmail] = useState('');
     const [display, onChangeDisplay] = useState('none')
 
     const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
 
     const service = new Service();
+    const utils = new Utils();
 
 
     const [playing, setPlaying] = useState(false);
 
     function carrgarInput(text: string){
-        onChangeVideoId(textInput1.match(regex)[1])
-        registrarMusica()
+        try {
+            onChangeVideoId(textInput1.match(regex)[1])
+            registrarMusica().then(() => onChangeDisplay("Block"))
+        } catch (e) {
+            Alert.alert("Informe um Link valido ")
+            onChangeDisplay("none")
+        }
     }
+
+
+    useEffect(() => {
+        utils.buscarEmail().then(email => {
+            if(email === null){
+                utils.routerForLogin()
+            }
+            onChangeEmail(email)
+        })
+    }, []);
 
 
     async function registrarMusica(){
-
-
-        console.log(videoId)
         const meta  =  await getYoutubeMeta(videoId).then(meta => {
-            console.log('title of the video : ' + meta.title);
-            console.log('title of the video : ' + meta.thumbnail_url);
             return meta
         });
 
-        let email = await AsyncStorage.getItem("EMAIL")
+        let email = await utils.buscarEmail()
 
-        const result = await service.registrarMusica(meta.title,textInput1,email,meta.thumbnail_url)
-        console.log(result)
-        console.log("hi")
-        if (result === "REGISTREFULL") {
-            Alert.alert("Video registrado")
+        try {
+            const result = await service.registrarMusica(meta.title,textInput1,email,meta.thumbnail_url)
+            if (result === "Registre sucessful") {
+                Alert.alert("Video registrado com sucesso")
+            } else if (result == "music has registred"){
+                Alert.alert("Essa musica já está cadastrada")
+            }
+        } catch (e) {
+            console.log(e.message)
         }
+
     }
-
-    const onStateChange = useCallback(  (state) => {
-        console.log(state)
-        if (state == "video cued") {
-            registrarMusica()
-            onChangeDisplay("Block")
-        }
-
-        if (state === "unstarted") {
-            onChangeDisplay("none")
-            Alert.alert("Error url video");
-        }
-
-
-        if (state === "ended") {
-            Alert.alert("video has finished playing!");
-        }
-    }, []);
-
 
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={{display:display}}>
-                    {/*<YoutubePlayer*/}
-                    {/*    height={styles.image.height}*/}
-                    {/*    play={playing}*/}
-                    {/*    videoId={videoId}*/}
-                    {/*    onChangeState={onStateChange}*/}
-                    {/*/>*/}
+                    <YoutubePlayer
+                        height={styles.image.height}
+                        play={playing}
+                        videoId={videoId}
+                    />
                 </View>
 
                 <TextInput

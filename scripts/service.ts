@@ -1,6 +1,6 @@
 export class Service {
 
-    private urlValue = "http://localhost:8080"
+    private urlValue = "http://10.84.15.203:8080"
         "http://172.22.160.1:8080"
 
     buscarMusicas(){
@@ -21,8 +21,9 @@ export class Service {
         return fetch(`${this.urlValue}/music/register?title=${title}&link=${link}&email=${email}&thumbnail=${thumbnail}`,{
             method:"POST"
         })
-            .then((response) => response.json())
+            .then((response) => response.text())
             .then(response => response)
+
     }
 
     autenticarUsuario(email:String, password:String){

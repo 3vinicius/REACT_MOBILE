@@ -13,6 +13,8 @@ import {
 import {Service} from "@/scripts/service";
 import YoutubePlayer, {getYoutubeMeta} from "react-native-youtube-iframe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {router} from "expo-router";
+import {Utils} from "@/scripts/utils";
 
 
 export default (props) => {
@@ -26,6 +28,7 @@ export default (props) => {
     const initialImages = []
     const [imageSources, setImageSources] = useState(initialImages);
     const [objectSources, setObjectSources] = useState([]);
+    const [email, onChangeEmail] = useState(null)
 
 
 
@@ -33,22 +36,40 @@ export default (props) => {
     const [musicas, setMusicas] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const email = "teste"
+
+    const utils = new Utils();
 
 
+    useEffect(() => {
 
-    async function trazerDados() {
-        const resultado = await service.buscarMusicasCurtidas(email);
-        let array = resultado.length;
-        const initialImageArray = Array(array).fill(imageUnlike); // Atualize `imageSources` com a lógica correta
-        const musicsComponet = resultado.map((element) => {
-            if (element.thumbnail === null) {
-                element.thumbnail = "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e03e495a-8596-4cab-a33a-703e023e41e5";
+        utils.verifiUserAuthentic().then(autentic => {
+            if(autentic){
+                utils.buscarEmail().then(async (email) => {
+                    onChangeEmail(email)
+                    await trazerDados(email)
+                })
             }
-            return { music: element, source: imageUnlike }; // Não modifique o valor de source aqui
-        });
-        setImageSources(initialImageArray);
-        setObjectSources(musicsComponet);
+        })
+    }, []);
+
+    async function trazerDados(email:string) {
+
+        try {
+            const resultado = await service.buscarMusicasCurtidas(email);
+            let array = resultado.length;
+            const initialImageArray = Array(array).fill(imageUnlike); // Atualize `imageSources` com a lógica correta
+            const musicsComponet = resultado.map((element) => {
+                if (element.thumbnail === null) {
+                    element.thumbnail = "https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e03e495a-8596-4cab-a33a-703e023e41e5";
+                }
+                return { music: element, source: imageUnlike }; // Não modifique o valor de source aqui
+            });
+            setImageSources(initialImageArray);
+            setObjectSources(musicsComponet);
+        } catch (e) {
+            router.push("/(tabs)/index");
+        }
+
     }
 
 
@@ -61,10 +82,6 @@ export default (props) => {
     }, [objectSources]);
 
 
-    useEffect(() => {
-        trazerDados();
-    }, []);
-
 
     const handleImageClick = async (index) => {
         if (objectSources[index].music.likedUser == 1 ){
@@ -72,7 +89,7 @@ export default (props) => {
         } else {
             await  service.likeMusic(objectSources[index].music.id,email)
         }
-     await trazerDados()
+     await trazerDados(email)
     };
 
 
@@ -135,7 +152,9 @@ const styles = StyleSheet.create({
         transform: "translateY(-5px)"
     },
     fontSize: {
-      fontSize: 10,
+        width: 200,
+        textAlign: "center",
+        fontSize: 10,
     },
     styleFlex: {
         display: "flex",
