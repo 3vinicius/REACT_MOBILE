@@ -4,6 +4,8 @@ Bem-vindo ao **LouveFeedback**! 👋
 
 > Um aplicativo inovador para interação musical dentro da igreja, permitindo que colaboradores deem feedbacks e sugestões de músicas para melhorar a experiência da comunidade.
 
+![imageApp](https://github.com/user-attachments/assets/fb0bf7ee-2fd9-4278-8e65-d90c80a7a4e1)
+
 ## 📌 Sobre o Projeto
 
 O **LouveFeedback** foi desenvolvido como parte da disciplina de extensão da Estácio, com o objetivo de proporcionar um ambiente colaborativo onde os músicos possam compreender melhor os interesses da congregação. Através deste app, os fiéis podem curtir músicas e sugerir novas, auxiliando os músicos na criação de repertórios mais alinhados com a comunidade.
