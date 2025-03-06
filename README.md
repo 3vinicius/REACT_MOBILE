@@ -10,6 +10,11 @@ Bem-vindo ao **LouveFeedback**! 👋
 
 O **LouveFeedback** foi desenvolvido como parte da disciplina de extensão da Estácio, com o objetivo de proporcionar um ambiente colaborativo onde os músicos possam compreender melhor os interesses da congregação. Através deste app, os fiéis podem curtir músicas e sugerir novas, auxiliando os músicos na criação de repertórios mais alinhados com a comunidade.
 
+
+https://github.com/user-attachments/assets/e171eff4-0a34-497a-a561-bcfbf7a39581
+
+
+
 ## 🚀 Tecnologias Utilizadas
 
 Este projeto foi desenvolvido utilizando:
@@ -21,6 +26,7 @@ Este projeto foi desenvolvido utilizando:
 ## 🏗 Arquitetura
 
 A aplicação segue o padrão **MVC**  garantindo uma separação clara entre a interface do usuário e lógica de negócios. A API responsável por gerenciar a interação com o banco de dados.
+- São 4 telas principais 
 
 
 ## 🗄️ Banco
