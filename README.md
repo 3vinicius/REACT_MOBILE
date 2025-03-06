@@ -1,52 +1,38 @@
-# Welcome to your Expo app 👋
+# 🎶 LouveFeedback
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Bem-vindo ao **LouveFeedback**! 👋
 
-"react-native-youtube-iframe": "^2.3.0"
+> Um aplicativo inovador para interação musical dentro da igreja, permitindo que colaboradores deem feedbacks e sugestões de músicas para melhorar a experiência da comunidade.
 
-## Get started
+## 📌 Sobre o Projeto
 
-1. Install dependencies
+O **LouveFeedback** foi desenvolvido como parte da disciplina de extensão da Estácio, com o objetivo de proporcionar um ambiente colaborativo onde os músicos possam compreender melhor os interesses da congregação. Através deste app, os fiéis podem curtir músicas e sugerir novas, auxiliando os músicos na criação de repertórios mais alinhados com a comunidade.
 
-   ```bash
-   npm install
-   ```
+## 🚀 Tecnologias Utilizadas
 
-2. Start the app
+Este projeto foi desenvolvido utilizando:
+- **Frontend Mobile:** React Native
+- **Backend API:** Spring Boot com Kotlin
+- **Banco de Dados:** PostgreSQL
+- **react-native-youtube-iframe:** Uma api do YouTube Ifame para react native
 
-   ```bash
-    npx expo start
-   ```
+## 🏗 Arquitetura
 
-In the output, you'll find options to open the app in a
+A aplicação segue o padrão **MVC**  garantindo uma separação clara entre a interface do usuário e lógica de negócios. A API responsável por gerenciar a interação com o banco de dados.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🗄️ Banco
+O banco de dados foi desenvolvido utilizando **PostgreSQL** e foi estruturado com **4 entidades principais**:
 
-## Get a fresh project
+- **Users**: Responsável por armazenar os dados dos usuários.
+- **Musics**: Armazena os dados das músicas.
+- **LikedMusics**: Registra os "likes" dos usuários nas respectivas músicas.
 
-When you're ready, run:
+![schema do banco](https://github.com/user-attachments/assets/0c5cdce8-3fb8-4f14-95b4-df924bda9b6d)
 
-```bash
-npm run reset-project
-```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+## 📦 Bibliotecas
+- [**react-native-youtube-iframe:**](https://www.npmjs.com/package/react-native-youtube-iframe)
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+🔗 **Repositório da API:** [API Mobile](https://github.com/3vinicius/API_MOBILE)
